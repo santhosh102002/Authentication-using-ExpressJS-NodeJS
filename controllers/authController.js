@@ -79,3 +79,7 @@ exports.signin = async(req,res)=>{
         })
     }
 }
+
+exports.user = async(req,res)=>{
+    
+}
