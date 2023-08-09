@@ -80,6 +80,21 @@ exports.signin = async(req,res)=>{
     }
 }
 
-exports.user = async(req,res)=>{
+exports.getUser = async(req,res)=>{
     
+    const userId = req.user.id;
+    try{
+        const user = await userModel.findById(userId);
+        return res.status(200).json({
+            success: true,
+            message:  user
+        })
+    
+    }
+    catch(err){
+        res.status(400).json({
+            success: false,
+            message: err.message
+        })
+    }
 }
