@@ -15,35 +15,37 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase:true
     },
-     password:{
+    password:{
         type:String,
         required:true,
         minLength:10,
         select: false
-     },
-     forgotPasswordToken:{
+    },
+    forgotPasswordToken:{
         type:String
-     },
-     forgotPasswordExpiryDate:{
+    },
+    forgotPasswordExpiryDate:{
         type:String
-     }
-},{timestamps: true});
-
-userSchema.pre('save', async ()=>{
-    if(!this.isModified('password')){
-        return next()
     }
-    this.password = await bcrypt.hash(this.password,10)
-    return next()
-})
+}, { timestamps: true });
+
+userSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) {
+        return next();
+    }
+    this.password = await bcrypt.hash(this.password, 10);
+    return next();
+});
+
 userSchema.methods = {
-    jwtToken(){
-       return jwt.sign({id: this._id,email: this.email},
-         process.env.SECRET,
-         {expiresIn: '24h'})
+    jwtToken() {
+        return jwt.sign(
+            { id: this._id, email: this.email },
+            process.env.SECRET,
+            { expiresIn: '24h' }
+        );
     }
 }
 
-
-const userModel = mongoose.model('User',userSchema)
-module.exports  = userModel;
+const userModel = mongoose.model('User', userSchema);
+module.exports = userModel;

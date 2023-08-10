@@ -1,6 +1,6 @@
 const userModel = require('../models/userSchema')
 const emailvalidator = require('email-validator')
-
+const bcrypt = require('bcrypt')
 
 exports.signup = async (req,res)=>{
     const {name,email,password,confirmpassword} = req.body
@@ -54,7 +54,7 @@ exports.signin = async(req,res)=>{
             email
         }).select('+password')
         
-        if(!user || password!== user.password){
+        if(!user || !await bcrypt.compare(password,user.password)){
             throw new Error('Please enter valid mail and password')
         }
        
@@ -97,4 +97,27 @@ exports.getUser = async(req,res)=>{
             message: err.message
         })
     }
+}
+
+exports.logout = (req,res)=>{
+    try{
+        const cookieOptions = {
+            expires: new Date(),
+            httpOnly:true
+            
+        }
+        res.cookie('token',null,cookieOptions);
+        res.status(200).json({
+            success:true,
+            message:"Successfully loggedout"
+        })
+
+    }
+    catch(err){
+        res.status(400).json({
+            success:false,
+            message:err.message
+        })
+    }
+
 }
